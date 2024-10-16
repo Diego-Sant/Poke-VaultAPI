@@ -1,25 +1,10 @@
-const express = require("express");
-const fs = require("fs");
-const cors = require("cors");
+import fs from "fs";
 
-const app = express();
-const port = 8080;
-
-const corsOptions = {
-  origin: "http://localhost:4200",
-  optionsSuccessStatus: 204,
-  methods: "GET, POST, PUT, DELETE",
-};
-
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
-app.get("/carta", (req, res) => {
+export const getCard = (req, res) => {
   const page = parseInt(req.query.page) || 0;
   const perPage = parseInt(req.query.perPage) || 10;
 
-  fs.readFile("db.json", "utf8", (err, data) => {
+  fs.readFile("../db.json", "utf8", (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erro Interno do Servidor!");
@@ -27,26 +12,24 @@ app.get("/carta", (req, res) => {
     }
 
     const jsonData = JSON.parse(data);
-
     const start = page * perPage;
     const end = start + perPage;
-
-    const result = jsonData.items.slice(start, end);
+    const result = jsonData.cards.slice(start, end);
 
     res.status(200).json({
-      items: result,
-      total: jsonData.items.length,
+      cards: result,
+      total: jsonData.cards.length,
       page,
       perPage,
-      totalPages: Math.ceil(jsonData.items.length / perPage),
+      totalPages: Math.ceil(jsonData.cards.length / perPage),
     });
   });
-});
+};
 
-app.post("/carta", (req, res) => {
+export const addCard = (req, res) => {
   const { image, name, price, rarity } = req.body;
 
-  fs.readFile("db.json", "utf8", (err, data) => {
+  fs.readFile("../db.json", "utf8", (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erro Interno do Servidor!");
@@ -54,11 +37,7 @@ app.post("/carta", (req, res) => {
     }
 
     const jsonData = JSON.parse(data);
-
-    const maxId = jsonData.items.reduce(
-      (max, item) => Math.max(max, item.id),
-      0
-    );
+    const maxId = jsonData.cards.reduce((max, item) => Math.max(max, item.id), 0);
 
     const newItem = {
       id: maxId + 1,
@@ -68,9 +47,9 @@ app.post("/carta", (req, res) => {
       rarity,
     };
 
-    jsonData.items.push(newItem);
+    jsonData.cards.push(newItem);
 
-    fs.writeFile("db.json", JSON.stringify(jsonData), (err) => {
+    fs.writeFile("../db.json", JSON.stringify(jsonData), (err) => {
       if (err) {
         console.log(err);
         res.status(500).send("Erro Interno do Servidor!");
@@ -80,13 +59,13 @@ app.post("/carta", (req, res) => {
       res.status(201).json(newItem);
     });
   });
-});
+};
 
-app.put("/carta/:id", (req, res) => {
+export const updateCard = (req, res) => {
   const id = parseInt(req.params.id);
   const { image, name, price, rarity } = req.body;
 
-  fs.readFile("db.json", "utf8", (err, data) => {
+  fs.readFile("../db.json", "utf8", (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erro Interno do Servidor!");
@@ -94,38 +73,31 @@ app.put("/carta/:id", (req, res) => {
     }
 
     const jsonData = JSON.parse(data);
-
-    const index = jsonData.items.findIndex((item) => item.id === id);
+    const index = jsonData.cards.findIndex((item) => item.id === id);
 
     if (index === -1) {
       res.status(404).send("Item não existe!");
       return;
     }
 
-    jsonData.items[index] = {
-      id,
-      image,
-      name,
-      price,
-      rarity,
-    };
+    jsonData.cards[index] = { id, image, name, price, rarity };
 
-    fs.writeFile("db.json", JSON.stringify(jsonData), (err) => {
+    fs.writeFile("../db.json", JSON.stringify(jsonData), (err) => {
       if (err) {
         console.log(err);
         res.status(500).send("Erro Interno do Servidor!");
         return;
       }
 
-      res.status(200).json(jsonData.items[index]);
+      res.status(200).json(jsonData.cards[index]);
     });
   });
-});
+};
 
-app.delete("/carta/:id", (req, res) => {
+export const deleteCard = (req, res) => {
   const id = parseInt(req.params.id);
 
-  fs.readFile("db.json", "utf8", (err, data) => {
+  fs.readFile("../db.json", "utf8", (err, data) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erro Interno do Servidor!");
@@ -133,17 +105,16 @@ app.delete("/carta/:id", (req, res) => {
     }
 
     const jsonData = JSON.parse(data);
-
-    const index = jsonData.items.findIndex((item) => item.id === id);
+    const index = jsonData.cards.findIndex((item) => item.id === id);
 
     if (index === -1) {
       res.status(404).send("Item não existe!");
       return;
     }
 
-    jsonData.items.splice(index, 1);
+    jsonData.cards.splice(index, 1);
 
-    fs.writeFile("db.json", JSON.stringify(jsonData), (err) => {
+    fs.writeFile("../db.json", JSON.stringify(jsonData), (err) => {
       if (err) {
         console.log(err);
         res.status(500).send("Erro Interno do Servidor!");
@@ -153,8 +124,4 @@ app.delete("/carta/:id", (req, res) => {
       res.status(204).send();
     });
   });
-});
-
-app.listen(port, () => {
-  console.log(`Server aberto em http://localhost:${port}`);
-});
+};
