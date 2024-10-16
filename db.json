@@ -1,11 +1,3 @@
-{"cards":
-    [
-        {
-            "id": 1,
-            "image":"https://diego-sant.github.io/QuizApp/img/Charizard.jpg",
-            "name":"Charizard - Celebrations: Classic Collection (CCC)",
-            "price":"415,31",
-            "rarity": 3
-        }
-    ]
+{
+    "cards": []
 }

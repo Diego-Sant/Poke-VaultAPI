@@ -1,24 +1,27 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import cardRoute from "./routes/card.route.js";
 import authRoute from "./routes/auth.route.js";
 
 const app = express();
-const port = 8080;
+const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
-  origin: "http://localhost:4200",
+  origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 204,
+  credentials: true,
   methods: "GET, POST, PUT, DELETE",
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser())
 
 app.use("/carta", cardRoute);
 app.use("/auth", authRoute);
 
-app.listen(port, () => {
-  console.log(`Server aberto em http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server está funcionando na porta ${PORT}`);
 });
