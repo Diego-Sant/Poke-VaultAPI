@@ -19,8 +19,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser())
 
-app.use("/carta", cardRoute);
-app.use("/auth", authRoute);
+app.use("/api/cartas", cardRoute);
+app.use("/api/auth", authRoute);
 
 app.listen(PORT, () => {
   console.log(`Server está funcionando na porta ${PORT}`);
