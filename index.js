@@ -3,6 +3,7 @@ import cors from "cors";
 
 import cardRoute from "./routes/card.route.js";
 import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js"
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use("/api/cartas", cardRoute);
 app.use("/api/auth", authRoute);
+app.use("/api/usuarios", userRoute);
 
 app.listen(PORT, () => {
   console.log(`Server está funcionando na porta ${PORT}`);
