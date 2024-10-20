@@ -22,7 +22,7 @@ model Card {
   user User @relation(fields: [userId], references: [id])
   title String
   imageUrl String
-  price Int
+  price String
   rarity Int
   createdAt DateTime @default(now())
 }
