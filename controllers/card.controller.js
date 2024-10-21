@@ -1,27 +1,42 @@
 import prisma from "../lib/prisma.js";
 
 export const getCards = async (req, res) => {
-    const page = parseInt(req.query.page) || 0;
-    const perPage = parseInt(req.query.perPage) || 10;
+  const page = parseInt(req.query.page) || 0;
+  const perPage = parseInt(req.query.perPage) || 10;
+  const searchTerm = req.query.searchTerm || '';
 
-    try {
-        const totalCards = await prisma.card.count();
-        const cards = await prisma.card.findMany({
-        skip: page * perPage,
-        take: perPage,
-        });
+  try {
+      const totalCards = await prisma.card.count({
+          where: {
+              title: {
+                  contains: searchTerm,
+                  mode: 'insensitive',
+              },
+          },
+      });
 
-        res.status(200).json({
-        cards,
-        total: totalCards,
-        page,
-        perPage,
-        totalPages: Math.ceil(totalCards / perPage),
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Erro Interno do Servidor!");
-    }
+      const cards = await prisma.card.findMany({
+          skip: page * perPage,
+          take: perPage,
+          where: {
+              title: {
+                  contains: searchTerm,
+                  mode: 'insensitive',
+              },
+          },
+      });
+
+      res.status(200).json({
+          cards,
+          total: totalCards,
+          page,
+          perPage,
+          totalPages: Math.ceil(totalCards / perPage),
+      });
+  } catch (err) {
+      console.log(err);
+      res.status(500).send("Erro Interno do Servidor!");
+  }
 };
 
 export const getCard = async (req, res) => {
