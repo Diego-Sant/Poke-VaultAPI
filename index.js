@@ -11,21 +11,20 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: "http://localhost:4200",
-  optionsSuccessStatus: 204,
   credentials: true,
   methods: "GET, POST, PUT, DELETE",
 };
 
-app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(cors(corsOptions));
+app.use(express.json());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:4200");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
-
-app.use(express.json());
 
 app.use("/api/cartas", cardRoute);
 app.use("/api/auth", authRoute);
