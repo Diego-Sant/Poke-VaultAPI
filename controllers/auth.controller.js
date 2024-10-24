@@ -50,7 +50,7 @@ export const login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: age,
-            //sameSite: 'None',
+            sameSite: 'None',
         });
         
         return res.status(200).json(userInfo);
